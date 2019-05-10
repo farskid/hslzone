@@ -94,15 +94,17 @@ const App: React.FC = () => {
 
   return (
     <div className="App">
-      <aside className="sidebar">
-        <pre>
-          {JSON.stringify(
-            state,
-            (key, value) => (value === undefined ? "undefined" : value),
-            2
-          )}
-        </pre>
-      </aside>
+      {process.env.NODE_ENV === "development" ? (
+        <aside className="sidebar">
+          <pre>
+            {JSON.stringify(
+              state,
+              (key, value) => (value === undefined ? "undefined" : value),
+              2
+            )}
+          </pre>
+        </aside>
+      ) : null}
       <header className="App-header">
         {state.zoneState === "Idle" ? (
           <button
