@@ -14,7 +14,7 @@
   },
   "scripts": {
     "start": "yarn tailwind && react-scripts start",
-    "build": "yarn tailwind && yarn purgecss && react-scripts build",
+    "build": "yarn tailwind && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "tailwind": "tailwind build src/tailwind.src.css -c tailwind.js -o src/tailwind.css",
