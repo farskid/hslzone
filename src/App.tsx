@@ -3,6 +3,9 @@ import { detectZone } from "./polygon";
 import { ZoneState, ZoneEvents } from "./types";
 import { getCurrentLocation, watchCurrentLocation } from "./geolocation";
 import "./App.css";
+import { Page } from "./Page";
+import { Button } from "./Button";
+import { Debug } from "./Debug";
 
 const initialState: ZoneState = {
   error: undefined,
@@ -35,6 +38,11 @@ function reducer(state: ZoneState, event: ZoneEvents): ZoneState {
         ...state,
         zoneWatchState: "Watching"
       };
+    case "SET_WATCH_ID":
+      return {
+        ...state,
+        zoneWatchId: event.payload.watchId
+      };
     default:
       return initialState;
   }
@@ -46,7 +54,7 @@ const App: React.FC = () => {
   useEffect(() => {
     switch (state.zoneWatchState) {
       case "Watching":
-        return watchCurrentLocation(
+        const watchId = watchCurrentLocation(
           point => {
             sendEvent({
               type: "SET_ZONE",
@@ -57,6 +65,12 @@ const App: React.FC = () => {
             sendEvent({ type: "SET_ZONE_ERROR", payload: { error: err } });
           }
         );
+        return sendEvent({
+          type: "SET_WATCH_ID",
+          payload: {
+            watchId
+          }
+        });
       case "Not_Watching":
       default:
       // noop
@@ -84,7 +98,8 @@ const App: React.FC = () => {
           }
         );
       case "Error":
-        return window.alert((state.error as PositionError).message);
+        // TODO: Report the crash somewhere
+        return;
       case "Success":
       case "Idle":
       default:
@@ -93,60 +108,69 @@ const App: React.FC = () => {
   }, [state.zoneState]);
 
   return (
-    <div className="App">
-      {process.env.NODE_ENV === "development" ? (
-        <aside className="sidebar">
-          <pre>
-            {JSON.stringify(
-              state,
-              (key, value) => (value === undefined ? "undefined" : value),
-              2
-            )}
-          </pre>
-        </aside>
-      ) : null}
-      <header className="App-header">
+    <div>
+      <Debug env={process.env.NODE_ENV} state={state} />
+      <main role="main">
+        {/* <h1>You're in zone {state.zone}</h1> */}
         {state.zoneState === "Idle" ? (
-          <button
-            onClick={() => {
-              sendEvent({ type: "DETECT_LOCATION" });
-            }}
-          >
-            Show My Zone
-          </button>
-        ) : null}
-        {state.zoneState === "Pending" ? (
-          <button disabled>Detecting your HSL zone...</button>
-        ) : null}
-        {state.zoneState === "Success" ? (
-          <>
-            <button
+          <Page alignment="Bottom">
+            <Button
               onClick={() => {
                 sendEvent({ type: "DETECT_LOCATION" });
               }}
             >
-              Show My Zone
-            </button>
-            <button
-              onClick={() => {
-                sendEvent({
-                  type: "WATCH_LOCATION"
-                });
-              }}
-              disabled={state.zoneWatchState === "Watching"}
-            >
-              Watch for live zone changes
-            </button>
+              Find My Zone
+            </Button>
+          </Page>
+        ) : null}
+        {state.zoneState === "Pending" ? (
+          <Page alignment="Middle">
+            <p className="text-white text-2xl">Detecting your HSL zone...</p>
+          </Page>
+        ) : null}
+        {state.zoneState === "Success" ? (
+          <Page alignment="Bottom">
+            <h2 className="text-center text-white">
+              Your zone is{" "}
+              <span className="text-5xl text-success">{state.zone}</span>
+            </h2>
             {state.zoneWatchState === "Watching" ? (
-              <p>Watching live location...</p>
+              <p className="w-full mt-5 text-align-center text-success text-center">
+                Watching live location...
+              </p>
             ) : null}
-            <h1>Your zone is {state.zone}</h1>
-          </>
+            <div
+              className="flex flex-col justify-end items-center w-full"
+              style={{ height: "50%" }}
+            >
+              <Button
+                className="mb-2 w-4/5"
+                onClick={() => {
+                  sendEvent({ type: "DETECT_LOCATION" });
+                }}
+              >
+                Refresh
+              </Button>
+              <Button
+                className="w-4/5"
+                onClick={() => {
+                  sendEvent({
+                    type: "WATCH_LOCATION"
+                  });
+                }}
+                disabled={state.zoneWatchState === "Watching"}
+              >
+                Watch for live zone changes
+              </Button>
+            </div>
+          </Page>
         ) : null}
         {state.zoneState === "Error" ? (
-          <h1 style={{ color: "red" }}>Error</h1>
+          <Page>
+            <h1 className="text-danger">Try Again</h1>
+          </Page>
         ) : null}
-      </header>
+      </main>
     </div>
   );
 };

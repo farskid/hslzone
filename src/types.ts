@@ -16,4 +16,5 @@ export type ZoneEvents =
   | { type: "DETECT_LOCATION" }
   | { type: "SET_ZONE"; payload: { zone: Zone } }
   | { type: "SET_ZONE_ERROR"; payload: { error: PositionError } }
-  | { type: "WATCH_LOCATION" };
+  | { type: "WATCH_LOCATION" }
+  | { type: "SET_WATCH_ID"; payload: { watchId: number } };

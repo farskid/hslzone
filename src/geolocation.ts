@@ -20,7 +20,11 @@ export function watchCurrentLocation(
   success: (p: Point) => void,
   fail: (error: PositionError) => void
 ) {
-  navigator.geolocation.watchPosition(({ coords: { latitude, longitude } }) => {
-    success([longitude, latitude]);
-  }, fail);
+  const watchId = navigator.geolocation.watchPosition(
+    ({ coords: { latitude, longitude } }) => {
+      success([longitude, latitude]);
+    },
+    fail
+  );
+  return watchId;
 }
