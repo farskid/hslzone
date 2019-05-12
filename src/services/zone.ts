@@ -2,7 +2,7 @@ import zoneData from "../zoneData.json";
 
 import { Point, Zone, ZoneData, Polygon } from "../types";
 
-let zone: Zone | undefined;
+let zone: Zone | undefined = undefined;
 
 export function getZone(): Zone | undefined {
   return zone;
