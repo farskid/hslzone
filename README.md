@@ -41,17 +41,24 @@ Automatic deployments on master branch by Netlify integration.
 
 ## Credits, Thanks, Inspirations
 
-- This project is sponsored by [Futurice's](https://futurice.com/) [Spice Program](http://spiceprogram.org/oss-sponsorship)
+- This project is sponsored by [Futurice's](https://futurice.com/) [Spice
+  Program](http://spiceprogram.org/oss-sponsorship)
 - [Create react App](https://facebook.github.io/create-react-app/)
 - [Netlify](https://netlify.com)
 - Readme style is inspired by [Onkometrorikki.fi](https://Onkometrorikki.fi) project by [@0lpeh](https://twitter.com/0lpeh)
 
 ## Supporters
 
-This project is sponsored by [Futurice's](https://futurice.com/) [Open Source Sponsorship program](http://spiceprogram.org/oss-sponsorship)
+This project is sponsored by:
+
+[Futurice's](https://futurice.com/) [Open Source Sponsorship program](http://spiceprogram.org/oss-sponsorship)
 
 [![Supported by the Spice
 Program](https://github.com/futurice/spiceprogram/raw/gh-pages/assets/img/logo/chilicorn_with_text-180.png)](https://spiceprogram.org)
+
+BrowserStack's generous unlimited free plan for open source projects
+
+[![BrowserStack.com](browserstack.png)](https://browserstack.com)
 
 ## License
 
