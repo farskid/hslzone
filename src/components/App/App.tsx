@@ -130,6 +130,7 @@ const App: React.FC = () => {
       case "Pending":
         return getCurrentLocation(
           point => {
+            detectZone(point);
             sendEvent({
               type: "SET_ZONE_SUCCESS"
             });
