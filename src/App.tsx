@@ -99,6 +99,9 @@ const App: React.FC = () => {
         );
       case "Error":
         // TODO: Report the crash somewhere
+        if (process.env.NODE_ENV === "development") {
+          window.alert((state.error as PositionError).message);
+        }
         return;
       case "Success":
       case "Idle":
