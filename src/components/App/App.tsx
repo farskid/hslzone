@@ -15,6 +15,11 @@ import { Button } from "../Button";
 import { Debug } from "../Debug";
 import { PublicZone } from "../Zone";
 import { getNotificationText } from "../../utils/getNotificationText";
+import { ErrorScreen } from "./ErrorScreen";
+import { ZoneSuccessScreen } from "./ZoneSuccessScreen";
+import { PendingScreen } from "./PendingScreen";
+import { IdleScreen } from "./IdleScreen";
+import { logger } from "../../utils/logger";
 
 const initialState: ZoneState = {
   error: undefined,
@@ -71,13 +76,10 @@ function reducer(state: ZoneState, event: ZoneEvents): ZoneState {
 }
 
 const App: React.FC = () => {
-  const [state, sendEvent] = useReducer(reducer, initialState);
-
-  function sendEventWithLog(event: ZoneEvents) {
-    console.group(event);
-    console.groupEnd();
-    sendEvent(event);
-  }
+  const [state, sendEvent] = useReducer(
+    process.env.NODE_ENV === "development" ? logger(reducer) : reducer,
+    initialState
+  );
 
   // Request for notification permission
   useEffect(() => {
@@ -85,7 +87,7 @@ const App: React.FC = () => {
       case "default":
         requestForNotificationPermission()
           .then(permission => {
-            sendEventWithLog({
+            sendEvent({
               type: "SET_NOTIFICATION_PERMISSION",
               payload: { permission }
             });
@@ -111,19 +113,19 @@ const App: React.FC = () => {
         const watchId = watchCurrentLocation(
           point => {
             console.log(point, detectZone(point));
-            sendEventWithLog({
+            sendEvent({
               type: "SET_ZONE",
               payload: { zone: detectZone(point) }
             });
           },
           err => {
-            sendEventWithLog({
+            sendEvent({
               type: "SET_ZONE_ERROR",
               payload: { error: err }
             });
           }
         );
-        return sendEventWithLog({
+        return sendEvent({
           type: "SET_WATCH_ID",
           payload: {
             watchId
@@ -147,13 +149,13 @@ const App: React.FC = () => {
       case "Pending":
         return getCurrentLocation(
           point => {
-            sendEventWithLog({
+            sendEvent({
               type: "SET_ZONE",
               payload: { zone: detectZone(point) }
             });
           },
           err => {
-            sendEventWithLog({
+            sendEvent({
               type: "SET_ZONE_ERROR",
               payload: { error: err }
             });
@@ -185,68 +187,24 @@ const App: React.FC = () => {
     <div className="h-full">
       <Debug env={process.env.NODE_ENV} state={state} />
       <main role="main" className="h-full">
-        {/* <h1>You're in zone {state.zone}</h1> */}
         {state.zoneState === "Idle" ? (
-          <Page alignment="Bottom">
-            <Button
-              onClick={() => {
-                sendEventWithLog({ type: "DETECT_LOCATION" });
-              }}
-            >
-              Find My Zone
-            </Button>
-          </Page>
+          <IdleScreen
+            onZoneFind={() => sendEvent({ type: "DETECT_LOCATION" })}
+          />
         ) : null}
-        {state.zoneState === "Pending" ? (
-          <Page alignment="Middle">
-            <p className="text-white text-2xl">Detecting your HSL zone...</p>
-          </Page>
-        ) : null}
+        {state.zoneState === "Pending" ? <PendingScreen /> : null}
         {state.zoneState === "Success" ? (
-          <Page alignment="Bottom">
-            <div className="mb-32">
-              {state.zone !== undefined ? (
-                <h1 className="text-center text-white text-3xl sm:text-5xl">
-                  Your zone is{" "}
-                  <span className="text-success relative-text-size">
-                    <PublicZone name={state.zone} />
-                  </span>
-                </h1>
-              ) : null}
-              {state.zoneWatchState === "Watching" ? (
-                <p className="w-full text-align-center text-accent text-center">
-                  Watching live location...
-                </p>
-              ) : null}
-            </div>
-            <div className="flex flex-col justify-end items-center w-full sm:w-2/3">
-              <Button
-                className="mb-3 w-4/5 sm:w-auto"
-                onClick={() => {
-                  sendEventWithLog({ type: "DETECT_LOCATION" });
-                }}
-              >
-                Refresh
-              </Button>
-              <Button
-                className="w-4/5 sm:w-auto"
-                onClick={() => {
-                  sendEventWithLog({
-                    type: "WATCH_LOCATION"
-                  });
-                }}
-                disabled={state.zoneWatchState === "Watching"}
-              >
-                Watch for live zone changes
-              </Button>
-            </div>
-          </Page>
+          <ZoneSuccessScreen
+            state={{ zone: state.zone, zoneWatchState: state.zoneWatchState }}
+            onRefresh={() => sendEvent({ type: "DETECT_LOCATION" })}
+            onWatchLocation={() =>
+              sendEvent({
+                type: "WATCH_LOCATION"
+              })
+            }
+          />
         ) : null}
-        {state.zoneState === "Error" ? (
-          <Page>
-            <h1 className="text-danger">Try Again</h1>
-          </Page>
-        ) : null}
+        {state.zoneState === "Error" ? <ErrorScreen /> : null}
       </main>
     </div>
   );
