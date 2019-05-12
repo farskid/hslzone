@@ -108,9 +108,9 @@ const App: React.FC = () => {
   }, [state.zoneState]);
 
   return (
-    <div>
+    <div className="h-full">
       <Debug env={process.env.NODE_ENV} state={state} />
-      <main role="main">
+      <main role="main" className="h-full">
         {/* <h1>You're in zone {state.zone}</h1> */}
         {state.zoneState === "Idle" ? (
           <Page alignment="Bottom">
