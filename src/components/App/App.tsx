@@ -1,19 +1,17 @@
 import React, { useEffect, useReducer } from "react";
-import { detectZone } from "../../services/zone";
+import { detectZone, getZone } from "../../services/zone";
 import { ZoneState, ZoneEvents } from "../../types";
 import {
   getCurrentLocation,
-  watchCurrentLocation
+  watchCurrentLocation,
+  getWatchId
 } from "../../services/geolocation";
 import {
   requestForNotificationPermission,
   sendNotification
 } from "../../services/notification";
 import "./App.css";
-import { Page } from "../Page";
-import { Button } from "../Button";
 import { Debug } from "../Debug";
-import { PublicZone } from "../Zone";
 import { getNotificationText } from "../../utils/getNotificationText";
 import { ErrorScreen } from "./ErrorScreen";
 import { ZoneSuccessScreen } from "./ZoneSuccessScreen";
@@ -23,10 +21,8 @@ import { logger } from "../../utils/logger";
 
 const initialState: ZoneState = {
   error: undefined,
-  zone: undefined,
   zoneState: "Idle",
   zoneWatchState: "Not_Watching",
-  zoneWatchId: undefined,
   notificationState: Notification.permission
 };
 function reducer(state: ZoneState, event: ZoneEvents): ZoneState {
@@ -35,13 +31,11 @@ function reducer(state: ZoneState, event: ZoneEvents): ZoneState {
       return {
         ...state,
         zoneState: "Pending",
-        zoneWatchId: undefined,
         zoneWatchState: "Not_Watching"
       };
-    case "SET_ZONE":
+    case "SET_ZONE_SUCCESS":
       return {
         ...state,
-        zone: event.payload.zone,
         zoneState: "Success"
       };
     case "SET_ZONE_ERROR":
@@ -54,11 +48,6 @@ function reducer(state: ZoneState, event: ZoneEvents): ZoneState {
       return {
         ...state,
         zoneWatchState: "Watching"
-      };
-    case "SET_WATCH_ID":
-      return {
-        ...state,
-        zoneWatchId: event.payload.watchId
       };
     case "REQUEST_FOR_NOTIFICATION_PERMISSION":
       return {
@@ -98,9 +87,7 @@ const App: React.FC = () => {
           });
         break;
       case "NOT_AVAILABLE":
-      // noop
       case "granted":
-      // noop
       default:
       // noop
     }
@@ -110,11 +97,11 @@ const App: React.FC = () => {
   useEffect(() => {
     switch (state.zoneWatchState) {
       case "Watching":
-        const watchId = watchCurrentLocation(
+        watchCurrentLocation(
           point => {
+            detectZone(point);
             sendEvent({
-              type: "SET_ZONE",
-              payload: { zone: detectZone(point) }
+              type: "SET_ZONE_SUCCESS"
             });
           },
           err => {
@@ -124,20 +111,15 @@ const App: React.FC = () => {
             });
           }
         );
-        return sendEvent({
-          type: "SET_WATCH_ID",
-          payload: {
-            watchId
-          }
-        });
       case "Not_Watching":
       default:
       // noop
     }
 
     return () => {
-      if (state.zoneWatchId) {
-        navigator.geolocation.clearWatch(state.zoneWatchId);
+      const watchId = getWatchId();
+      if (watchId) {
+        navigator.geolocation.clearWatch(watchId);
       }
     };
   }, [state.zoneWatchState]);
@@ -149,8 +131,7 @@ const App: React.FC = () => {
         return getCurrentLocation(
           point => {
             sendEvent({
-              type: "SET_ZONE",
-              payload: { zone: detectZone(point) }
+              type: "SET_ZONE_SUCCESS"
             });
           },
           err => {
@@ -175,13 +156,17 @@ const App: React.FC = () => {
 
   // Notify user when zoen changes
   useEffect(() => {
-    if (state.notificationState === "granted") {
-      if (state.zone !== undefined) {
-        sendNotification("HSL Zone Changed!", getNotificationText(state.zone));
+    if (state.zoneState === "Success") {
+      if (state.notificationState === "granted") {
+        const zone = getZone();
+        if (zone !== undefined) {
+          sendNotification("HSL Zone Changed!", getNotificationText(zone));
+        }
       }
     }
-  }, [state.zone]);
+  }, [state.zoneState]);
 
+  const zone = getZone();
   return (
     <div className="h-full">
       <Debug env={process.env.NODE_ENV} state={state} />
@@ -194,7 +179,7 @@ const App: React.FC = () => {
         {state.zoneState === "Pending" ? <PendingScreen /> : null}
         {state.zoneState === "Success" ? (
           <ZoneSuccessScreen
-            state={{ zone: state.zone, zoneWatchState: state.zoneWatchState }}
+            state={{ zone: zone, zoneWatchState: state.zoneWatchState }}
             onRefresh={() => sendEvent({ type: "DETECT_LOCATION" })}
             onWatchLocation={() =>
               sendEvent({

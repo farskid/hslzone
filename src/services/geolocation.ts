@@ -1,5 +1,11 @@
 import { Point } from "../types";
 
+let watchId: number | undefined = undefined;
+
+export function getWatchId() {
+  return watchId;
+}
+
 export function getCurrentLocation(
   success: (p: Point) => void,
   fail: (error: PositionError) => void
@@ -20,7 +26,7 @@ export function watchCurrentLocation(
   success: (p: Point) => void,
   fail: (error: PositionError) => void
 ) {
-  const watchId = navigator.geolocation.watchPosition(
+  watchId = navigator.geolocation.watchPosition(
     ({ coords: { latitude, longitude } }) => {
       success([longitude, latitude]);
     },

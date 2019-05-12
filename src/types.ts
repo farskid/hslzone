@@ -9,18 +9,15 @@ export type ZoneWatchState = "Not_Watching" | "Watching";
 export type NotificationState = NotificationPermission | "NOT_AVAILABLE";
 export interface ZoneState {
   error: PositionError | undefined;
-  zone: Zone | undefined;
   zoneState: ZoneStatus;
   zoneWatchState: ZoneWatchState;
-  zoneWatchId: number | undefined;
   notificationState: NotificationState;
 }
 export type ZoneEvents =
   | { type: "DETECT_LOCATION" }
-  | { type: "SET_ZONE"; payload: { zone: Zone } }
+  | { type: "SET_ZONE_SUCCESS" }
   | { type: "SET_ZONE_ERROR"; payload: { error: PositionError } }
   | { type: "WATCH_LOCATION" }
-  | { type: "SET_WATCH_ID"; payload: { watchId: number } }
   | { type: "REQUEST_FOR_NOTIFICATION_PERMISSION" }
   | {
       type: "SET_NOTIFICATION_PERMISSION";

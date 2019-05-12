@@ -1,11 +1,12 @@
 import React from "react";
 import { Page } from "../Page";
-import { ZoneState, ZoneEvents } from "../../types";
+import { ZoneState } from "../../types";
 import { PublicZone } from "../Zone";
 import { Button } from "../Button";
+import { getZone } from "../../services/zone";
 
 type Props = {
-  state: Pick<ZoneState, "zone" | "zoneWatchState">;
+  state: Pick<ZoneState, "zoneWatchState">;
   onRefresh: () => void;
   onWatchLocation: () => void;
 };
@@ -14,14 +15,15 @@ export function ZoneSuccessScreen({
   onRefresh,
   onWatchLocation
 }: Props) {
+  const zone = getZone();
   return (
     <Page alignment="Bottom">
       <div className="mb-32">
-        {state.zone !== undefined ? (
+        {zone !== undefined ? (
           <h1 className="text-center text-white text-3xl sm:text-5xl">
             Your zone is{" "}
             <span className="text-success relative-text-size">
-              <PublicZone name={state.zone} />
+              <PublicZone name={zone} />
             </span>
           </h1>
         ) : null}

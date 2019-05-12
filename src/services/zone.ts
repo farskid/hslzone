@@ -2,18 +2,25 @@ import zoneData from "../zoneData.json";
 
 import { Point, Zone, ZoneData, Polygon } from "../types";
 
+let zone: Zone | undefined;
+
+export function getZone(): Zone | undefined {
+  return zone;
+}
+
 export function detectZone(point: Point): Zone {
   if (isInZoneA(point, zoneData)) {
-    return "A";
+    zone = "A";
   } else if (isInZoneB(point, zoneData)) {
-    return "B";
+    zone = "B";
   } else if (isInZoneC(point, zoneData)) {
-    return "C";
+    zone = "C";
   } else if (isInZoneD(point, zoneData)) {
-    return "D";
+    zone = "D";
   } else {
-    return "OUT_OF_ZONES";
+    zone = "OUT_OF_ZONES";
   }
+  return zone;
 }
 
 function isInZoneA(point: Point, zoneData: ZoneData) {
