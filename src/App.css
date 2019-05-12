@@ -5,4 +5,12 @@
   background-color: #eee;
   padding: 15px;
   border: 2px solid #777;
+  max-width: 100%;
+  overflow: auto;
+}
+
+.relative-text-size {
+  font-size: 2em;
+  /* Relative to viewport */
+  /* font-size: calc(3vw + 3vh); */
 }
