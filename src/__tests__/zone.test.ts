@@ -1,4 +1,4 @@
-import { detectZone } from "../polygon";
+import { detectZone } from "../zone";
 
 describe("Zones", () => {
   describe("B", () => {
