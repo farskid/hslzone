@@ -203,7 +203,11 @@ const App: React.FC = () => {
             }
           />
         ) : null}
-        {state.zoneState === "Error" ? <ErrorScreen /> : null}
+        {state.zoneState === "Error" ? (
+          <ErrorScreen
+            onRefresh={() => sendEvent({ type: "DETECT_LOCATION" })}
+          />
+        ) : null}
       </main>
     </div>
   );
