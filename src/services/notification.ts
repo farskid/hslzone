@@ -1,4 +1,4 @@
-import { NotificationState } from "./types";
+import { NotificationState } from "../types";
 
 function isNotificationSupported() {
   return "Notification" in window;

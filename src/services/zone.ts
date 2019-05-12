@@ -1,6 +1,6 @@
-import zoneData from "./zoneData.json";
+import zoneData from "../zoneData.json";
 
-import { Point, Zone, ZoneData, Polygon } from "./types";
+import { Point, Zone, ZoneData, Polygon } from "../types";
 
 export function detectZone(point: Point): Zone {
   if (isInZoneA(point, zoneData)) {

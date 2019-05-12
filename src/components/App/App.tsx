@@ -1,17 +1,20 @@
 import React, { useEffect, useReducer } from "react";
-import { detectZone } from "./zone";
-import { ZoneState, ZoneEvents } from "./types";
-import { getCurrentLocation, watchCurrentLocation } from "./geolocation";
+import { detectZone } from "../../services/zone";
+import { ZoneState, ZoneEvents } from "../../types";
+import {
+  getCurrentLocation,
+  watchCurrentLocation
+} from "../../services/geolocation";
 import {
   requestForNotificationPermission,
   sendNotification
-} from "./notification";
+} from "../../services/notification";
 import "./App.css";
-import { Page } from "./Page";
-import { Button } from "./Button";
-import { Debug } from "./Debug";
-import { PublicZone } from "./components/Zone";
-import { getNotificationText } from "./utils/getNotificationText";
+import { Page } from "../Page";
+import { Button } from "../Button";
+import { Debug } from "../Debug";
+import { PublicZone } from "../Zone";
+import { getNotificationText } from "../../utils/getNotificationText";
 
 const initialState: ZoneState = {
   error: undefined,

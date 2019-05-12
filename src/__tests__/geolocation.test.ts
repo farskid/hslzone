@@ -1,4 +1,4 @@
-import { getCurrentLocation } from "../geolocation";
+import { getCurrentLocation } from "../services/geolocation";
 
 describe("geolocation", () => {
   describe("getCurrentLocation", () => {

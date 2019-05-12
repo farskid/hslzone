@@ -1,4 +1,4 @@
-import { detectZone } from "../zone";
+import { detectZone } from "../services/zone";
 
 describe("Zones", () => {
   describe("B", () => {

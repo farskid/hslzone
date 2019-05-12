@@ -1,5 +1,5 @@
 import React from "react";
-import { ZoneState } from "./types";
+import { ZoneState } from "../types";
 
 type ENV = "development" | "test" | "production";
 type Props = {

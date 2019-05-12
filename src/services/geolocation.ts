@@ -1,4 +1,4 @@
-import { Point } from "./types";
+import { Point } from "../types";
 
 export function getCurrentLocation(
   success: (p: Point) => void,
