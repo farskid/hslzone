@@ -2,7 +2,7 @@ import React from "react";
 import classnames from "classnames";
 
 const buttonClassnames =
-  "bg-accent text-white font-bold text-2xl py-8 px-16 rounded";
+  "bg-accent text-white font-bold text-1.5xl sm:text-2xl py-6 sm:py-8 px-8 sm:px-16 rounded";
 
 type Props = React.PropsWithoutRef<JSX.IntrinsicElements["button"]>;
 
