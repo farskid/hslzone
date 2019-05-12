@@ -19,7 +19,9 @@ function reducer(state: ZoneState, event: ZoneEvents): ZoneState {
     case "DETECT_LOCATION":
       return {
         ...state,
-        zoneState: "Pending"
+        zoneState: "Pending",
+        zoneWatchId: undefined,
+        zoneWatchState: "Not_Watching"
       };
     case "SET_ZONE":
       return {
