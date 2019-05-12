@@ -1,18 +1,25 @@
 import React, { useEffect, useReducer } from "react";
-import { detectZone } from "./polygon";
+import { detectZone } from "./zone";
 import { ZoneState, ZoneEvents } from "./types";
 import { getCurrentLocation, watchCurrentLocation } from "./geolocation";
+import {
+  requestForNotificationPermission,
+  sendNotification
+} from "./notification";
 import "./App.css";
 import { Page } from "./Page";
 import { Button } from "./Button";
 import { Debug } from "./Debug";
+import { PublicZone } from "./components/Zone";
+import { getNotificationText } from "./utils/getNotificationText";
 
 const initialState: ZoneState = {
   error: undefined,
   zone: undefined,
   zoneState: "Idle",
   zoneWatchState: "Not_Watching",
-  zoneWatchId: undefined
+  zoneWatchId: undefined,
+  notificationState: Notification.permission
 };
 function reducer(state: ZoneState, event: ZoneEvents): ZoneState {
   switch (event.type) {
@@ -45,6 +52,16 @@ function reducer(state: ZoneState, event: ZoneEvents): ZoneState {
         ...state,
         zoneWatchId: event.payload.watchId
       };
+    case "REQUEST_FOR_NOTIFICATION_PERMISSION":
+      return {
+        ...state,
+        notificationState: "default"
+      };
+    case "SET_NOTIFICATION_PERMISSION":
+      return {
+        ...state,
+        notificationState: event.payload.permission
+      };
     default:
       return initialState;
   }
@@ -53,21 +70,57 @@ function reducer(state: ZoneState, event: ZoneEvents): ZoneState {
 const App: React.FC = () => {
   const [state, sendEvent] = useReducer(reducer, initialState);
 
+  function sendEventWithLog(event: ZoneEvents) {
+    console.group(event);
+    console.groupEnd();
+    sendEvent(event);
+  }
+
+  // Request for notification permission
+  useEffect(() => {
+    switch (state.notificationState) {
+      case "default":
+        requestForNotificationPermission()
+          .then(permission => {
+            sendEventWithLog({
+              type: "SET_NOTIFICATION_PERMISSION",
+              payload: { permission }
+            });
+          })
+          .catch(err => {
+            // TODO: report the error somewhere
+            console.error(err);
+          });
+        break;
+      case "NOT_AVAILABLE":
+      // noop
+      case "granted":
+      // noop
+      default:
+      // noop
+    }
+  }, [state.notificationState]);
+
+  // Start / Clear watching for location changes
   useEffect(() => {
     switch (state.zoneWatchState) {
       case "Watching":
         const watchId = watchCurrentLocation(
           point => {
-            sendEvent({
+            console.log(point, detectZone(point));
+            sendEventWithLog({
               type: "SET_ZONE",
               payload: { zone: detectZone(point) }
             });
           },
           err => {
-            sendEvent({ type: "SET_ZONE_ERROR", payload: { error: err } });
+            sendEventWithLog({
+              type: "SET_ZONE_ERROR",
+              payload: { error: err }
+            });
           }
         );
-        return sendEvent({
+        return sendEventWithLog({
           type: "SET_WATCH_ID",
           payload: {
             watchId
@@ -85,18 +138,22 @@ const App: React.FC = () => {
     };
   }, [state.zoneWatchState]);
 
+  // Detect zone based on current location
   useEffect(() => {
     switch (state.zoneState) {
       case "Pending":
         return getCurrentLocation(
           point => {
-            sendEvent({
+            sendEventWithLog({
               type: "SET_ZONE",
               payload: { zone: detectZone(point) }
             });
           },
           err => {
-            sendEvent({ type: "SET_ZONE_ERROR", payload: { error: err } });
+            sendEventWithLog({
+              type: "SET_ZONE_ERROR",
+              payload: { error: err }
+            });
           }
         );
       case "Error":
@@ -112,6 +169,15 @@ const App: React.FC = () => {
     }
   }, [state.zoneState]);
 
+  // Notify user when zoen changes
+  useEffect(() => {
+    if (state.notificationState === "granted") {
+      if (state.zone !== undefined) {
+        sendNotification("HSL Zone Changed!", getNotificationText(state.zone));
+      }
+    }
+  }, [state.zone]);
+
   return (
     <div className="h-full">
       <Debug env={process.env.NODE_ENV} state={state} />
@@ -121,7 +187,7 @@ const App: React.FC = () => {
           <Page alignment="Bottom">
             <Button
               onClick={() => {
-                sendEvent({ type: "DETECT_LOCATION" });
+                sendEventWithLog({ type: "DETECT_LOCATION" });
               }}
             >
               Find My Zone
@@ -136,12 +202,14 @@ const App: React.FC = () => {
         {state.zoneState === "Success" ? (
           <Page alignment="Bottom">
             <div className="mb-32">
-              <h1 className="text-center text-white text-3xl sm:text-5xl">
-                Your zone is{" "}
-                <span className="text-success" style={{ fontSize: "2em" }}>
-                  {state.zone}
-                </span>
-              </h1>
+              {state.zone !== undefined ? (
+                <h1 className="text-center text-white text-3xl sm:text-5xl">
+                  Your zone is{" "}
+                  <span className="text-success relative-text-size">
+                    <PublicZone name={state.zone} />
+                  </span>
+                </h1>
+              ) : null}
               {state.zoneWatchState === "Watching" ? (
                 <p className="w-full text-align-center text-accent text-center">
                   Watching live location...
@@ -152,7 +220,7 @@ const App: React.FC = () => {
               <Button
                 className="mb-3 w-4/5 sm:w-auto"
                 onClick={() => {
-                  sendEvent({ type: "DETECT_LOCATION" });
+                  sendEventWithLog({ type: "DETECT_LOCATION" });
                 }}
               >
                 Refresh
@@ -160,7 +228,7 @@ const App: React.FC = () => {
               <Button
                 className="w-4/5 sm:w-auto"
                 onClick={() => {
-                  sendEvent({
+                  sendEventWithLog({
                     type: "WATCH_LOCATION"
                   });
                 }}
