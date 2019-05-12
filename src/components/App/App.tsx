@@ -112,7 +112,6 @@ const App: React.FC = () => {
       case "Watching":
         const watchId = watchCurrentLocation(
           point => {
-            console.log(point, detectZone(point));
             sendEvent({
               type: "SET_ZONE",
               payload: { zone: detectZone(point) }
