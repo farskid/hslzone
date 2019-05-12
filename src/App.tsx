@@ -133,21 +133,20 @@ const App: React.FC = () => {
         ) : null}
         {state.zoneState === "Success" ? (
           <Page alignment="Bottom">
-            <h2 className="text-center text-white">
+            <h1 className="text-center text-white text-3xl sm:text-5xl mb-32">
               Your zone is{" "}
-              <span className="text-5xl text-success">{state.zone}</span>
-            </h2>
+              <span className="text-success" style={{ fontSize: "2em" }}>
+                {state.zone}
+              </span>
+            </h1>
             {state.zoneWatchState === "Watching" ? (
               <p className="w-full mt-5 text-align-center text-success text-center">
                 Watching live location...
               </p>
             ) : null}
-            <div
-              className="flex flex-col justify-end items-center w-full"
-              style={{ height: "50%" }}
-            >
+            <div className="flex flex-col justify-end items-center w-full sm:w-2/3">
               <Button
-                className="mb-2 w-4/5"
+                className="mb-3 w-4/5 sm:w-auto"
                 onClick={() => {
                   sendEvent({ type: "DETECT_LOCATION" });
                 }}
@@ -155,7 +154,7 @@ const App: React.FC = () => {
                 Refresh
               </Button>
               <Button
-                className="w-4/5"
+                className="w-4/5 sm:w-auto"
                 onClick={() => {
                   sendEvent({
                     type: "WATCH_LOCATION"
