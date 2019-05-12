@@ -52,3 +52,8 @@ This project is sponsored by [Futurice's](https://futurice.com/) [Open Source Sp
 
 [![Supported by the Spice
 Program](https://github.com/futurice/spiceprogram/raw/gh-pages/assets/img/logo/chilicorn_with_text-180.png)](https://spiceprogram.org)
+
+## License
+
+This project is licensed under MIT. Made by ❤️ by [Farzad
+YZ](https://twitter.com/farzad_yz)
