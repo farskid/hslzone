@@ -16,6 +16,7 @@
     "start": "yarn tailwind && react-scripts start",
     "build": "yarn tailwind && react-scripts build",
     "test": "react-scripts test",
+    "test-all": "CI=true yarn test",
     "eject": "react-scripts eject",
     "tailwind": "tailwind build src/tailwind.src.css -c tailwind.js -o src/tailwind.css",
     "purgecss": "purgecss -c purgecss.config.js -o src"
@@ -44,7 +45,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-push": "yarn build"
+      "pre-push": "yarn test-all && yarn build"
     }
   }
 }
