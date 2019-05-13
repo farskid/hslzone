@@ -23,7 +23,10 @@ const initialState: ZoneState = {
   error: undefined,
   zoneState: "Idle",
   zoneWatchState: "Not_Watching",
-  notificationState: Notification.permission
+  notificationState:
+    (window as any).Notification !== undefined
+      ? (window as any).Notification.permission
+      : "NOT_AVAILABLE"
 };
 function reducer(state: ZoneState, event: ZoneEvents): ZoneState {
   switch (event.type) {
@@ -165,7 +168,7 @@ const App: React.FC = () => {
         }
       }
     }
-  }, [state.zoneState]);
+  }, [getZone()]);
 
   const zone = getZone();
   return (
