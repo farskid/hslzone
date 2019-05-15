@@ -1,7 +1,7 @@
 # HSL Zone
 
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/olpeh/onkometrorikki/pulls)
-[![license](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](https://github.com/olpeh/onkometrorikki/blob/master/LICENSE)
+[![license](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](https://github.com/farskid/hslzone/blob/master/LICENSE)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/0f8f7013-3d30-405c-a163-07a8bc4f0591/deploy-status)](https://app.netlify.com/sites/hslzone/deploys)
 
 A progressive web application to detect your HSL zone based on your location. It
