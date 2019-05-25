@@ -5,8 +5,12 @@
   background-color: #eee;
   padding: 15px;
   border: 2px solid #777;
-  max-width: 100%;
+  max-width: 400px;
   overflow: auto;
+}
+
+.sidebar pre {
+  white-space: pre-wrap;
 }
 
 .relative-text-size {

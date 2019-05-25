@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom.iterable", "es6", "dom"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -19,8 +15,5 @@
     "jsx": "preserve",
     "isolatedModules": true
   },
-  "include": [
-    "src",
-    "purgecss.config.js"
-  ]
+  "include": ["src", "purgecss.config.js"]
 }
