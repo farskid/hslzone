@@ -1,12 +1,12 @@
 import React from "react";
-import { ZoneState } from "../types";
 
 type ENV = "development" | "test" | "production";
 type Props = {
   env: ENV;
-  state: ZoneState;
+  state: object;
+  children?: React.ReactNode;
 };
-export function Debug({ env, state }: Props) {
+export function Debug({ env, state, children }: Props) {
   return env === "development" ? (
     <aside className="sidebar">
       <pre>
@@ -16,6 +16,7 @@ export function Debug({ env, state }: Props) {
           2
         )}
       </pre>
+      {children}
     </aside>
   ) : null;
 }

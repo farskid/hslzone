@@ -1,12 +1,10 @@
 import React from "react";
 import { Page } from "../Page";
-import { ZoneState } from "../../types";
 import { PublicZone } from "../Zone";
 import { Button } from "../Button";
-import { getZone } from "../../services/zone";
 
 type Props = {
-  state: Pick<ZoneState, "zoneWatchState">;
+  state: any;
   onRefresh: () => void;
   onWatchLocation: () => void;
 };
@@ -15,7 +13,10 @@ export function ZoneSuccessScreen({
   onRefresh,
   onWatchLocation
 }: Props) {
-  const zone = getZone();
+  const { zone } = state.context;
+  const isWatching = state.matches({
+    ready: { zone_available: "watching" }
+  });
   return (
     <Page alignment="Bottom">
       <div className="mb-32">
@@ -27,7 +28,7 @@ export function ZoneSuccessScreen({
             </span>
           </h1>
         ) : null}
-        {state.zoneWatchState === "Watching" ? (
+        {isWatching ? (
           <p className="w-full text-align-center text-accent text-center">
             Watching live location...
           </p>
@@ -47,7 +48,7 @@ export function ZoneSuccessScreen({
           onClick={() => {
             onWatchLocation();
           }}
-          disabled={state.zoneWatchState === "Watching"}
+          disabled={isWatching}
         >
           Watch for live zone changes
         </Button>

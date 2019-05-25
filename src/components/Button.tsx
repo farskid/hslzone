@@ -10,7 +10,8 @@ export function Button({ children, onClick, className, disabled }: Props) {
   return (
     <button
       className={classnames(buttonClassnames, className, {
-        "opacity-50 cursor-not-allowed": disabled
+        "opacity-50 cursor-not-allowed": disabled,
+        "cursor-pointer": !disabled
       })}
       onClick={onClick}
       disabled={disabled}

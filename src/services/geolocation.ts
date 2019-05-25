@@ -1,20 +1,31 @@
 import { Point } from "../types";
 
-let watchId: number | undefined = undefined;
-
-export function getWatchId() {
-  return watchId;
+export function detectLocationSupport() {
+  return "navigator" in window && "geolocation" in window.navigator;
 }
 
 export function getCurrentLocation(
   success: (p: Point) => void,
   fail: (error: PositionError) => void
 ) {
-  if (!navigator || !navigator.geolocation) {
-    window.alert("This feature is not available in your device");
-    return;
-  }
-  navigator.geolocation.getCurrentPosition(
+  setTimeout(() => {
+    navigator.geolocation.getCurrentPosition(
+      ({ coords: { latitude, longitude } }) => {
+        success([longitude, latitude]);
+      },
+      err => {
+        console.log(err);
+        fail(err);
+      }
+    );
+  }, 1500);
+}
+
+export function watchCurrentLocation(
+  success: (p: Point) => void,
+  fail: (error: PositionError) => void
+) {
+  return navigator.geolocation.watchPosition(
     ({ coords: { latitude, longitude } }) => {
       success([longitude, latitude]);
     },
@@ -22,15 +33,6 @@ export function getCurrentLocation(
   );
 }
 
-export function watchCurrentLocation(
-  success: (p: Point) => void,
-  fail: (error: PositionError) => void
-) {
-  watchId = navigator.geolocation.watchPosition(
-    ({ coords: { latitude, longitude } }) => {
-      success([longitude, latitude]);
-    },
-    fail
-  );
-  return watchId;
+export function clearLocationWatch(watchId: number) {
+  navigator.geolocation.clearWatch(watchId);
 }
