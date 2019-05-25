@@ -13,16 +13,17 @@ export type ZoneContext = {
   zone: Zone | undefined;
 };
 
+type WatchLocationEvent = { type: "LOCATION_CHANGED"; data: Zone };
 export type ZoneEvents =
   | { type: "DETECT_ZONE" }
   | { type: "REFRESH" }
-  | { type: "LOCATION_CHANGED" }
-  | { type: "DETECT_ZONE" };
+  | WatchLocationEvent
+  | { type: "WATCH_LOCATION" };
 
-type ZoneStateSchema = {
+export type ZoneStateSchema = {
   states: {
-    location_pending: {};
-    location_supported: {
+    preparing: {};
+    ready: {
       states: {
         zone_idle: {};
         zone_pending: {};
@@ -36,29 +37,29 @@ type ZoneStateSchema = {
         zone_error: {};
       };
     };
-    location_not_supported: {};
+    error: {};
   };
 };
 
-export const zoneMachine = Machine<ZoneContext>(
+export const zoneMachine = Machine<ZoneContext, ZoneStateSchema>(
   {
     id: "zoneMachine",
-    initial: "location_pending",
+    initial: "preparing",
     context: { error: undefined, zone: undefined },
     states: {
-      location_pending: {
+      preparing: {
         invoke: {
           src: "detectLocationSupport",
           id: "detectLocationSupport",
           onDone: {
-            target: "location_supported"
+            target: "ready"
           },
           onError: {
-            target: "location_not_supported"
+            target: "error"
           }
         }
       },
-      location_supported: {
+      ready: {
         initial: "zone_idle",
         states: {
           zone_idle: {
@@ -122,7 +123,7 @@ export const zoneMachine = Machine<ZoneContext>(
           }
         }
       },
-      location_not_supported: {
+      error: {
         type: "final"
       }
     }
@@ -187,7 +188,9 @@ export const zoneMachine = Machine<ZoneContext>(
           if (Notification.permission === "default") {
             Notification.requestPermission()
               .then(permission => {
-                new Notification(`Your zone changed to ${e.data}`);
+                if (permission === "granted") {
+                  new Notification(`Your zone changed to ${e.data}`);
+                }
               })
               .catch(err => {});
           } else if (Notification.permission === "granted") {

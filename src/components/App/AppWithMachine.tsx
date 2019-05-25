@@ -23,10 +23,10 @@ function ViewForState({
 }
 
 export default function App() {
-  const [state, sendEvent, service] = useMachine(zoneMachine, {
+  const [state, sendEvent] = useMachine(zoneMachine, {
     devTools: true
   });
-  const [modalShown, setModalShown] = React.useState(true);
+  const [modalShown, setModalShown] = React.useState(false);
   return (
     <>
       <aside className="sidebar">
@@ -49,28 +49,22 @@ export default function App() {
         modalShown={modalShown}
         setModalShown={setModalShown}
       />
-      <ViewForState state={state} match="location_pending">
+      <ViewForState state={state} match="preparing">
         <PendingScreen>Detecting Geolocation support...</PendingScreen>
       </ViewForState>
-      <ViewForState state={state} match="location_not_supported">
+      <ViewForState state={state} match="error">
         <h1 className="text-danger">
           Geolocation is not supported in your browser
         </h1>
       </ViewForState>
-      <ViewForState state={state} match="location_supported">
-        <ViewForState state={state} match={{ location_supported: "zone_idle" }}>
+      <ViewForState state={state} match="ready">
+        <ViewForState state={state} match={{ ready: "zone_idle" }}>
           <IdleScreen onZoneFind={() => sendEvent({ type: "DETECT_ZONE" })} />
         </ViewForState>
-        <ViewForState
-          state={state}
-          match={{ location_supported: "zone_pending" }}
-        >
+        <ViewForState state={state} match={{ ready: "zone_pending" }}>
           <PendingScreen>Detecting your HSL zone...</PendingScreen>
         </ViewForState>
-        <ViewForState
-          state={state}
-          match={{ location_supported: "zone_available" }}
-        >
+        <ViewForState state={state} match={{ ready: "zone_available" }}>
           <ZoneSuccessScreen
             state={state}
             onRefresh={() => sendEvent({ type: "REFRESH" })}
@@ -81,10 +75,7 @@ export default function App() {
             }
           />
         </ViewForState>
-        <ViewForState
-          state={state}
-          match={{ location_supported: "zone_error" }}
-        >
+        <ViewForState state={state} match={{ ready: "zone_error" }}>
           <ErrorScreen
             error={state.context.error}
             onRefresh={() => sendEvent({ type: "DETECT_ZONE" })}

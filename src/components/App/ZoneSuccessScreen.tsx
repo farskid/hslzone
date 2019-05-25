@@ -15,7 +15,7 @@ export function ZoneSuccessScreen({
 }: Props) {
   const { zone } = state.context;
   const isWatching = state.matches({
-    location_supported: { zone_available: "watching" }
+    ready: { zone_available: "watching" }
   });
   return (
     <Page alignment="Bottom">
