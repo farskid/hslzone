@@ -90,14 +90,13 @@ export const zoneMachine = Machine<ZoneContext>(
               },
               LOCATION_CHANGED: {
                 target: ".history",
-                actions: ["setZone"]
+                actions: ["setZone", "sendNotif"]
               }
             },
             states: {
               history: {
-                id: "history",
                 type: "history",
-                history: "shallow"
+                history: "deep"
               },
               not_watching: {
                 on: {
@@ -161,8 +160,9 @@ export const zoneMachine = Machine<ZoneContext>(
             if (ctx.zone !== newZone) {
               callback({
                 type: "LOCATION_CHANGED",
-                data: detectZone(point)
+                data: newZone
               });
+              new Notification(`changed zone ${newZone}`);
             }
           },
           err => {
@@ -181,7 +181,20 @@ export const zoneMachine = Machine<ZoneContext>(
       }),
       setError: assign({
         error: (_, e) => e.data
-      })
+      }),
+      sendNotif: (ctx, e) => {
+        if ("Notification" in window) {
+          if (Notification.permission === "default") {
+            Notification.requestPermission()
+              .then(permission => {
+                new Notification(`Your zone changed to ${e.data}`);
+              })
+              .catch(err => {});
+          } else if (Notification.permission === "granted") {
+            new Notification(`Your zone changed to ${e.data}`);
+          }
+        }
+      }
     }
   }
 );

@@ -26,12 +26,6 @@ export default function App() {
   const [state, sendEvent, service] = useMachine(zoneMachine, {
     devTools: true
   });
-  console.log(state);
-  useEffect(() => {
-    service.onEvent(e => {
-      console.log(e);
-    });
-  }, []);
   const [modalShown, setModalShown] = React.useState(true);
   return (
     <>
