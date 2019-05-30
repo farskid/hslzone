@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useMachine } from "@xstate/react";
 import { zoneMachine } from "./machine";
 import { StateValue } from "xstate";
@@ -6,8 +6,8 @@ import { IdleScreen } from "./IdleScreen";
 import { PendingScreen } from "./PendingScreen";
 import { ZoneSuccessScreen } from "./ZoneSuccessScreen";
 import { ErrorScreen } from "./ErrorScreen";
-import { detectZone } from "./services/zone";
-import { Point } from "./types";
+// import { detectZone } from "./services/zone";
+// import { Point } from "./types";
 
 function ViewForState({
   state,
@@ -21,38 +21,38 @@ function ViewForState({
   return <>{state.matches(match) ? children : null}</>;
 }
 
-const MOCK_ZONES = {
-  A: [24.915668, 60.162614],
-  B: [24.825716, 60.187741],
-  C: [25.038163, 60.292933],
-  D: [24.468068, 60.123649]
-};
+// const MOCK_ZONES = {
+//   A: [24.915668, 60.162614],
+//   B: [24.825716, 60.187741],
+//   C: [25.038163, 60.292933],
+//   D: [24.468068, 60.123649]
+// };
 
-function getRandomFromArray(array: Point[]) {
-  const len = array.length;
-  const rand = Math.floor(Math.random() * len);
-  return array[rand];
-}
+// function getRandomFromArray(array: Point[]) {
+//   const len = array.length;
+//   const rand = Math.floor(Math.random() * len);
+//   return array[rand];
+// }
 
 export default function App() {
   const [state, sendEvent] = useMachine(zoneMachine, {
     devTools: true
   });
-  useEffect(() => {
-    if (state.matches({ ready: { zone_available: "watching" } })) {
-      let id: number = -1;
-      id = setInterval(() => {
-        sendEvent({
-          type: "LOCATION_CHANGED",
-          data: detectZone(getRandomFromArray(Object.values(MOCK_ZONES)))
-        });
-      }, 2000);
-      return () => {
-        clearInterval(id);
-      };
-    }
-    return () => {};
-  }, [state.value]);
+  // React.useEffect(() => {
+  //   if (state.matches({ ready: { zone_available: "watching" } })) {
+  //     let id: number = -1;
+  //     id = setInterval(() => {
+  //       sendEvent({
+  //         type: "LOCATION_CHANGED",
+  //         data: detectZone(getRandomFromArray(Object.values(MOCK_ZONES)))
+  //       });
+  //     }, 2000);
+  //     return () => {
+  //       clearInterval(id);
+  //     };
+  //   }
+  //   return () => {};
+  // }, [state.value]);
   return (
     <>
       <ViewForState state={state} match="preparing">
