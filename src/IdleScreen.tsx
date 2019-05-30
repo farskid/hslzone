@@ -11,7 +11,8 @@ export function IdleScreen({ onZoneFind }: Props) {
           onZoneFind();
         }}
         text="Find My Zone"
-        style={{ marginBottom: 50 }}
+        style={{ marginBottom: 200 }}
+        size="large"
       />
     </Page>
   );
