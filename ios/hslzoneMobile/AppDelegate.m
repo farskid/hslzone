@@ -6,7 +6,9 @@
  */
 
 #import "AppDelegate.h"
+#import "RNNotifications.h"
 #import <React/RCTPushNotificationManager.h>
+#import <UserNotifications/UserNotifications.h>
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
@@ -27,6 +29,9 @@
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
+  // Define UNUserNotificationCenter
+  UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+  center.delegate = self;
   return YES;
 }
 
@@ -65,5 +70,11 @@
  {
   [RCTPushNotificationManager didReceiveLocalNotification:notification];
  }
+
+//Called when a notification is delivered to a foreground app.
+-(void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
+{
+  completionHandler(UNAuthorizationOptionSound | UNAuthorizationOptionAlert | UNAuthorizationOptionBadge);
+}
 
 @end

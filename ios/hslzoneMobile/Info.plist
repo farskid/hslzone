@@ -41,6 +41,7 @@
 	<string></string>
 	<key>UIBackgroundModes</key>
 	<array>
+		<string>fetch</string>
 		<string>location</string>
 		<string>remote-notification</string>
 	</array>
@@ -58,5 +59,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Needs to monitor changes in geolocation in order to detect zone changes</string>
 </dict>
 </plist>
