@@ -7,7 +7,7 @@ import {
   detectLocationSupport
 } from "./services/geolocation";
 import { detectZone } from "./services/zone";
-import { GeolocationError, Alert } from "react-native";
+import { GeolocationError, AppState } from "react-native";
 import { sendNotification } from "./services/notification";
 
 export type ZoneContext = {
@@ -62,11 +62,6 @@ export const zoneMachine = Machine<ZoneContext, ZoneStateSchema>(
         }
       },
       ready: {
-        entry: [
-          () => {
-            sendNotification("test", "this is a test");
-          }
-        ],
         initial: "zone_idle",
         states: {
           zone_idle: {
@@ -190,11 +185,10 @@ export const zoneMachine = Machine<ZoneContext, ZoneStateSchema>(
         error: (_, e) => e.data
       }),
       sendNotif: (ctx, e) => {
-        sendNotification(
-          `NewZone: ${e.data}`,
-          `Your zone changed to ${e.data}`
-        );
-        // Alert.alert(`Your zone changed to ${e.data}`);
+        sendNotification(`Zone Change`, `Your zone has changed to ${e.data}`);
+        // if (AppState.currentState !== "active") {
+        //   sendNotification(`Your zone has changed to ${e.data}`);
+        // }
       }
     }
   }
