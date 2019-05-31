@@ -185,10 +185,10 @@ export const zoneMachine = Machine<ZoneContext, ZoneStateSchema>(
         error: (_, e) => e.data
       }),
       sendNotif: (ctx, e) => {
-        sendNotification(`Zone Change`, `Your zone has changed to ${e.data}`);
-        // if (AppState.currentState !== "active") {
-        //   sendNotification(`Your zone has changed to ${e.data}`);
-        // }
+        // sendNotification(`Zone Change`, `Your zone has changed to ${e.data}`);
+        if (AppState.currentState !== "active") {
+          sendNotification(`Zone Change`, `Your zone has changed to ${e.data}`);
+        }
       }
     }
   }
